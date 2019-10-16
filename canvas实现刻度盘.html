@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<meta http-equiv="X-UA-Compatible" content="ie=edge">
+		<title>Document</title>
+	</head>
+	<style type="text/css">
+
+	</style>
+	<body>
+		<canvas id="mycanvas" width="400" height="500"></canvas>
+		<script type="text/javascript">
+			let mycanvas = document.getElementById("mycanvas")
+			let ctx = mycanvas.getContext('2d')
+
+			let R = 100
+			let num = 0
+			// 设置canvas画布中心点
+			ctx.translate(200, 250)
+			
+			;(function drawAll ()  {
+				ctx.clearRect(-mycanvas.width/2,-mycanvas.height/2,mycanvas.width,mycanvas.height)
+				draw()
+				run()
+				requestAnimationFrame(drawAll)
+			})()
+			// 绘制圆
+			function draw () {
+				ctx.beginPath()
+				ctx.arc(0, 0, 100, Math.PI * 3 / 4, Math.PI / 4)
+				ctx.stroke()
+
+				
+				
+				// 小刻度
+				for (let i = 0; i < 101; i++) {
+					// 	// 开始先保存绘画环境
+					ctx.save()
+					// 	// 通过旋转画布绘制刻度
+					let deg = (Math.PI * 3 * i / 200) - (Math.PI / 4)
+					ctx.rotate(deg)
+					ctx.beginPath()
+					ctx.strokeStyle  = 'green'
+					ctx.moveTo(-90, 0)
+					ctx.lineTo(-85, 0)
+					ctx.stroke()
+					ctx.restore()
+				}
+				
+				// 大刻度
+				for (let i = 0; i < 11; i++) {
+					// 	// 开始先保存绘画环境
+					ctx.save()
+					// 	// 通过旋转画布绘制刻度
+					let deg = (Math.PI * 3 * i / 20) - (Math.PI / 4)
+					ctx.beginPath()
+					ctx.strokeStyle  = 'red'
+					ctx.rotate(deg)
+					ctx.moveTo(-90, 0)
+					ctx.lineTo(-80, 0)
+					ctx.stroke()
+					ctx.restore()
+				}
+				
+				// 绘制文字
+				for (let i = 0; i < 11; i++) {
+					ctx.save()
+					// 	// 通过旋转画布绘制文字,文字也会旋转
+					ctx.beginPath()
+					let deg = (Math.PI * 3 * i / 20) - (Math.PI / 4)
+					let x = Math.cos(deg) * R
+					let y = Math.sin(deg) * R
+					ctx.strokeStyle  = 'red'
+					ctx.fillStyle = "#2b2b2b"
+					ctx.font = "14px 微软雅黑"
+					ctx.textAlign = "center"
+					ctx.textBaseline = "middle"
+					ctx.rotate(deg)
+					ctx.fillText(i * 10, -65, 0);
+					ctx.stroke()
+					ctx.restore()
+				}
+			}
+			// ctx.beginPath()
+			// ctx.moveTo(0,-50)
+			// ctx.lineTo(0,0)
+			// ctx.stroke()
+			
+			// ;(function (){
+			// 	console.log(666)
+			// })()
+			function run () {
+				ctx.save()
+				// C 为指针的长度
+				let C = 50
+				let deg = (Math.PI * 3 * num / 200) - (Math.PI / 4)
+				ctx.rotate(deg)
+				ctx.beginPath()
+				ctx.strokeStyle  = 'green'
+				ctx.moveTo(-50, 0)
+				ctx.lineTo(0, 0)
+				ctx.stroke()
+				ctx.restore()
+				num++
+				ctx.restore()
+			}
+			// ;(function run() {
+			// 	ctx.save()
+			// 	// 每次动画先清除画布
+			// 	ctx.clearRect(0,0,mycanvas.width,mycanvas.height)
+			// 	// ctx.clearRect(-mycanvas.width,-mycanvas.height,mycanvas.width,mycanvas.height)
+			// 	// C 为指针的长度
+			// 	if (i > 100) {
+			// 		return
+			// 	}
+			// 	console.log(i)
+			// 	let C = 50
+			// 	let deg = (Math.PI * 3 * i / 200) - (Math.PI / 4)
+			// 	// 	// 通过旋转画布绘制刻度
+			// 	ctx.rotate(deg)
+			// 	ctx.beginPath()
+			// 	ctx.strokeStyle  = 'green'
+			// 	ctx.moveTo(-50, 0)
+			// 	ctx.lineTo(0, 0)
+			// 	ctx.stroke()
+			// 	ctx.restore()
+			// 	// let x = Math.cos(deg) * C
+			// 	// let y = Math.sin(deg) * C
+			// 	// console.log('坐标',x,y)
+			// 	// ctx.beginPath()
+			// 	// ctx.moveTo(x, y)
+			// 	// ctx.lineTo(0,0)
+			// 	// ctx.stroke()
+			// 	i++
+			// 	ctx.restore()
+			// 	requestAnimationFrame(run)
+			// })()
+			
+			
+		</script>
+	</body>
+</html>
