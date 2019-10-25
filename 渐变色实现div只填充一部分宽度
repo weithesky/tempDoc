@@ -1,0 +1,13 @@
+```css
+<div class="pie1"></div>
+
+width: 400px;
+height: 30px;
+border: green solid 1px;
+// 用渐变色的方式创建背景图片
+background-image: linear-gradient(to right, #00c9ff, #00c9ff);
+// 必须指定
+background-repeat: no-repeat;
+backgroud-size: 70% 100%
+
+```
