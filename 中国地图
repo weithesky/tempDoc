@@ -1,0 +1,44 @@
+ let mydata = [
+        { name: '湖南', value1: 120, value2: 1 },
+        { name: '湖北', value1: 1200, value2: 1 }
+      ]
+      // 基于准备好的dom，初始化echarts实例
+      let myChart = this.$echarts.init(document.getElementById('main'))
+      // 指定图表的配置项和数据
+      let option = {
+        title: {
+          text: '中国地图'
+        },
+        tooltip: {
+          // formatter: function (params) {
+          //   console.log(params)
+          //   return `现有数据：<br>数据1：${params.data.value1}<br>数据2：${params.data.value2}`
+          // }
+        },
+        geo: {
+          map: 'china'
+        },
+        series: [{
+          name: '现有数据',
+          type: 'map',
+          mapType: 'china',
+          roam: true,
+          label: {
+            normal: {
+              show: false
+            },
+            emphasis: {
+              show: false
+            }
+          },
+          data: this.mydata
+        }]
+      }
+      // 使用刚指定的配置项和数据显示图表。
+      myChart.setOption(option)
+
+      // 点击事件
+      myChart.on('click', function (params) {
+        console.log(params)
+        // 逻辑控制
+      })
