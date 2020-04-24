@@ -1,0 +1,117 @@
+### 游览器从url到页面最终呈现
+
+> 从耗时的角度，游览器请求、加载、渲染一个页面，时间主要花在下面五件事上面：
+>
+> - DNS查询
+> - TCP连接
+> - HTTP请求及响应
+> - 服务器响应
+> - 客户端渲染
+
+
+
+#### DNS解析
+
+> DNS:Domain Name Service(域名解析服务)
+
+- DNS缓存
+
+  	为了提升域名查询效率，设计了域名缓存机制，当访问过某个网站并得到其IP后，会将其域名和IP缓存下来，下一次访问的时候，就不需要再请求域名服务器获取IP，直接使用缓存中的IP，提高了响应的速度。当然缓存是有有效时间（即TTL值）的，当过了有效时间后，再次请求网站，还是需要先请求域名解析。OS系统也有DNS缓存服务，可以缓存一些常用的域名。
+
+
+
+- DNS解析（用户在url输入xxx.com，按下回车得到ip地址的过程）
+  1. 浏览器会检查缓存中有没有这个域名对应的解析过的IP地址，如果缓存中有，这个解析过程就将结束。
+  2. 如果用户的[浏览器缓存](https://www.baidu.com/s?wd=%E6%B5%8F%E8%A7%88%E5%99%A8%E7%BC%93%E5%AD%98&tn=44039180_cpr&fenlei=mv6quAkxTZn0IZRqIHckPjm4nH00T1Y3Ph7WuHP9uWuBuynzPhmk0ZwV5Hcvrjm3rH6sPfKWUMw85HfYnjn4nH6sgvPsT6KdThsqpZwYTjCEQLGCpyw9Uz4Bmy-bIi4WUvYETgN-TLwGUv3EPjnLPHD1nH6L)中没有，浏览器会查找[操作系统](https://www.baidu.com/s?wd=%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F&tn=44039180_cpr&fenlei=mv6quAkxTZn0IZRqIHckPjm4nH00T1Y3Ph7WuHP9uWuBuynzPhmk0ZwV5Hcvrjm3rH6sPfKWUMw85HfYnjn4nH6sgvPsT6KdThsqpZwYTjCEQLGCpyw9Uz4Bmy-bIi4WUvYETgN-TLwGUv3EPjnLPHD1nH6L)缓存中是否有这个域名对应的DNS解析结果。
+  3. LDNS域名解析服务器(Local DNS Server)，这个服务器通常是你所在城市的某个角落。
+  4. 如果LDNS仍然没有命中，就直接到Root Server域名服务器请求解析。
+  5. 根域名服务器返回给本地域名服务器一个所查询域的主域名服务器（gTLD Server）地址。gTLD是[国际顶级域名](https://www.baidu.com/s?wd=%E5%9B%BD%E9%99%85%E9%A1%B6%E7%BA%A7%E5%9F%9F%E5%90%8D&tn=44039180_cpr&fenlei=mv6quAkxTZn0IZRqIHckPjm4nH00T1Y3Ph7WuHP9uWuBuynzPhmk0ZwV5Hcvrjm3rH6sPfKWUMw85HfYnjn4nH6sgvPsT6KdThsqpZwYTjCEQLGCpyw9Uz4Bmy-bIi4WUvYETgN-TLwGUv3EPjnLPHD1nH6L)服务器，如.com、.cn、.org等，全球只有13台左右。
+  6. 本地域名服务器（Local DNS Server）再向上一步返回的gTLD服务器发送请求。
+  7. 接受请求的gTLD服务器查找并返回此域名对应的Name Server域名服务器的地址，这个Name Server通常就是你注册的域名服务器，例如你在某个域名服务提供商申请的域名，那么这个域名解析任务就由这个域名提供商的服务器来完成。
+  8. Name Server域名服务器会查询存储的域名和IP的映射关系表，正常情况下都根据域名得到目标IP记录，连同一个[TTL值](https://www.baidu.com/s?wd=TTL%E5%80%BC&tn=44039180_cpr&fenlei=mv6quAkxTZn0IZRqIHckPjm4nH00T1Y3Ph7WuHP9uWuBuynzPhmk0ZwV5Hcvrjm3rH6sPfKWUMw85HfYnjn4nH6sgvPsT6KdThsqpZwYTjCEQLGCpyw9Uz4Bmy-bIi4WUvYETgN-TLwGUv3EPjnLPHD1nH6L)返回给DNS Server域名服务器。
+  9. 返回该域名对应的IP和[TTL值](https://www.baidu.com/s?wd=TTL%E5%80%BC&tn=44039180_cpr&fenlei=mv6quAkxTZn0IZRqIHckPjm4nH00T1Y3Ph7WuHP9uWuBuynzPhmk0ZwV5Hcvrjm3rH6sPfKWUMw85HfYnjn4nH6sgvPsT6KdThsqpZwYTjCEQLGCpyw9Uz4Bmy-bIi4WUvYETgN-TLwGUv3EPjnLPHD1nH6L)，Local DNS Server会缓存这个域名和IP的对应关系，缓存的时间由[TTL值](https://www.baidu.com/s?wd=TTL%E5%80%BC&tn=44039180_cpr&fenlei=mv6quAkxTZn0IZRqIHckPjm4nH00T1Y3Ph7WuHP9uWuBuynzPhmk0ZwV5Hcvrjm3rH6sPfKWUMw85HfYnjn4nH6sgvPsT6KdThsqpZwYTjCEQLGCpyw9Uz4Bmy-bIi4WUvYETgN-TLwGUv3EPjnLPHD1nH6L)控制。
+  10. 把解析的结果返回给用户，用户根据TTL值缓存在本地系统缓存中，域名解析过程结束。
+
+
+
+#### 网络请求中：三次握手和四次挥手
+
+> **三次握手**：完成后建立连接，客户端与服务器开始传送数据。
+
+- 建立连接时，客户端A发送SYN包（SYN=j）到服务器B，并进入SYN_SEND状态，等待服务器B确认。（客户端发送建立连接指令）
+- 服务器B收到SYN包，必须确认客户A的SYN（ACK=j+1），同时自己也发送一个SYN包（SYN=k），即SYN+ACK包，此时服务器B进入SYN_RECV状态。（服务器发送是否确认指令）
+- 客户端A收到服务器B的SYN＋ACK包，向服务器B发送确认包ACK（ACK=k+1），此包发送完毕，客户端A和服务器B进入ESTABLISHED状态，完成三次握手。（客户端确认指令）
+
+
+
+> **四次挥手**：关闭连接
+>
+> 由于TCP连接是全双工的，因此每个方向都必须单独进行关闭。这个原则是当一方完成它的数据发送任务后就能发送一个FIN来终止这个方向的连接。收到一个 FIN只意味着这一方向上没有数据流动，一个TCP连接在收到一个FIN后仍能发送数据。首先进行关闭的一方将执行主动关闭，而另一方执行被动关闭。
+
+- 客户端A发送一个FIN，用来关闭客户A到服务器B的数据传送。
+- 服务器B收到这个FIN，它发回一个ACK，确认序号为收到的序号加1。和SYN一样，一个FIN将占用一个序号。
+- 服务器B关闭与客户端A的连接，发送一个FIN给客户端A。
+- 客户端A发回ACK报文确认，并将确认序号设置为收到序号加1。
+
+
+
+#### 页面渲染
+
+>   页面的渲染主要包含以下步骤（反复执行）：
+>
+> -  处理HTML标记并构建DOM树
+> - 处理CSS标记并构建CSSOM树
+> - 将DOM与CSSOM合并成一个渲染树
+> - 根据渲染树来布局，计算每个节点的几何信息
+> - 将各个节点绘制到屏幕上
+
+
+
+#### 重新渲染
+
+- **reflow重排**：当可见节点位置及尺寸发生变化时会发生重排，具体为下面情况：
+
+> - 页面初始渲染
+> - 添加/删除**可见**DOM元素
+> - 改变元素位置
+> - 改变元素尺寸（宽宽、高、**内外边距、边框**等）
+> - 改变元素内容**（文本、html等）**
+> - 改变元素**字体大小**
+> - 改变窗口尺寸
+>
+> **不会发生重排的行为**：
+>
+> - 读取dom节点属性、内容、样式
+
+
+
+- **repaint重绘**：改变某个元素的背景色、文字颜色、边框颜色等等不影响它周围或内部布局的属性时，屏幕的一部分要重画，但是元素的几何尺寸没有变。
+
+> - 重绘不一定导致重排
+> - 重排一定会导致重绘，因为重绘是浏览器渲染页面的最后一步
+
+
+
+- **问题一**：渲染过程中遇到JS文件怎么处理
+
+  > JavaScript的加载、解析与执行会阻塞DOM的构建，也就是说，在构建DOM时，HTML解析器若遇到了JavaScript，那么它会暂停构建DOM，将控制权移交给JavaScript引擎，等JavaScript引擎运行完毕，浏览器再从中断的地方恢复DOM构建。
+  >
+  >
+  >
+  > JS文件不只是阻塞DOM的构建，它会导致CSSOM也阻塞DOM的构建。这是因为JavaScript不只是可以改DOM，它还可以更改样式，也就是它可以更改CSSOM。前面我们介绍，不完整的CSSOM是无法使用的，但JavaScript中想访问CSSOM并更改它，那么在执行JavaScript时，必须要能拿到完整的CSSOM。所以就导致了一个现象，如果浏览器尚未完成CSSOM的下载和构建，而我们却想在此时运行脚本，那么浏览器将延迟脚本执行和DOM构建，直至其完成CSSOM的下载和构建。也就是说，**在这种情况下，浏览器会先下载和构建CSSOM，然后再执行JavaScript，最后在继续构建DOM**。
+
+
+
+- 问题二：性能优化
+
+  > - 减少http请求
+  > - 压缩资源大小
+  > - 减少重绘和重排次数：
+  >   1. 使用 transform 替代 top,因为css的transform 会使用硬件加速
+  >   2. 使用 visibility 替换 display: none ，因为前者只会引起重绘，后者会引发回流（改变了布局）
+  >   3. 要使用 table 布局，可能很小的一个小改动会造成整个 table 的重新布局
+  >   4. 不要重复读取和改写dom属性，可以使用变量存储读取的dom信息，可以使用文档碎片一次性添加要改写的dom信息
+  >   5. 避免css层级过高
+
+
+
