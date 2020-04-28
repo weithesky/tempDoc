@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport"
+    content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>history实现前端路由</title>
+</head>
+
+<body>
+  <div class="main">
+    <div class="menu">
+      <a href="/">首页</a>
+      <a href="/profile">个人中心</a>
+      <a href="/articles">文章列表</a>
+    </div>
+    <div class="content">
+
+    </div>
+  </div>
+  <script type="text/javascript">
+    const $ = (selector) => document.querySelector(selector);
+    class Route {
+      constructor(routeMap) {
+        this.routeMap = routeMap;
+        this._bindPopState(); // 全局注册popstate监听获取当前地址栏url值
+      }
+
+      init(path) {
+        history.replaceState({
+          path: path
+        }, '', path);
+        this.routeMap[path] && this.routeMap[path]();
+      }
+
+      go(path) { // 点击a链接时改变url并执行更新视图
+        history.pushState({
+          path: path
+        }, '', path);
+        this.routeMap[path] && this.routeMap[path]();
+      }
+
+      _bindPopState() { // 当游览器前进后退等操作时触发，并执行更新视图函数
+        window.addEventListener('popstate', (e) => {
+            const path = e.state && e.state.path;
+            this.routeMap[path] && this.routeMap[path]();
+        });
+      }
+    }
+
+    const routeMap = { // 构建回调函数形式处理，执行页面更新
+      '/': () => {
+        const content = $('.content');
+        content.innerHTML = '<div>welcome to Home Page</div>';
+      },
+      '/profile': () => {
+        const content = $('.content');
+        content.innerHTML = '<div>welcome to Profile Page</div>';
+      },
+      '/articles': () => {
+        const content = $('.content');
+        content.innerHTML =
+          '<div>' +
+          '<p>welcome to Article Page</p>' +
+          '<ul>' +
+          '<li>文章1</li>' +
+          '<li>文章2</li>' +
+          '<li>文章3</li>' +
+          '</ul>' +
+          '</div>';
+      }
+    };
+    const router = new Route(routeMap);
+    router.init(location.pathname);
+    $('.menu').addEventListener('click', (e) => {
+      if (e.target.tagName === 'A') {
+        e.preventDefault();
+        router.go(e.target.getAttribute('href'))
+      }
+    });
+  </script>
+</body>
+
+</html>
