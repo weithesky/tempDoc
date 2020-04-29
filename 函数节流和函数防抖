@@ -1,0 +1,71 @@
+### 函数节流和防抖
+
+
+
+- #### 函数节流
+
+  函数节流：限制函数在特定的时间间隔中只执行一次任务
+
+  例如游戏里面的技能存在一个冷却时间。函数节流保证函数在频繁触发下在一个冷却时间内不会再执行。当冷却结束才能再次执行，如此反复。
+
+  ```js
+  function fnuc (n) {
+      console.log('执行一次', n)
+  }
+  
+  function debounce (fn, delay=2000) {
+      var timer = null
+      return function (...args) {
+          console.log()
+          clearTimeout(timer)
+          timer = setTimeout(()=> {
+              fn(...args)
+          }, delay)
+      }
+  }
+  
+  //  正确的调用方式，把返回值函数存下来调用
+  let aFn = debounce(fnuc, 3000)
+  aFn(1) // 执行一次 1
+  
+  /* 错误的调用方式
+  ** debounce(fnuc, 3000)(1) 这个每次调用都会重新返回一**个函数
+  */
+  ```
+
+  
+
+
+
+
+
+- #### 函数防抖
+
+  函数防抖：任务频繁触发的情况下，只有任务触发的间隔超过指定间隔的时候，任务才会执行。
+
+  例如电脑显示器如果在30分钟内为操作会进入息屏状态，如果我们一直操作电脑，息屏时间会无线延迟知道满足30分钟内未操作的条件满足。
+
+  ```js
+  function fnuc (n) {
+      console.log('执行一次', n)
+  }
+  
+  function throttle (fn, delay=2000) {
+      var flag = false
+      return function (...args) {
+          if (!flag) {
+              fn(...args)
+              flag = true
+              setTimeout(()=> {
+                  flag = false
+              }, delay)
+          }
+      }
+  }
+  
+  let b = throttle(fnuc, 3000)
+  b(2)
+  ```
+
+> 可以使用时间戳差值替代`setTimeout`方法
+
